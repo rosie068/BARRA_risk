@@ -142,7 +142,7 @@ def CalBarraVolatility(dates):
                 for l in range(len(each_stock) - 1, 251, -1):
                     short_y = each_stock['sec_return'].iloc[l - 252:l] - each_stock['rf_return'].iloc[l - 252:l].values
                     short_x = each_stock['Rt'].iloc[l - 252:l].values
-                    short_x = short_x * ((0.5 ** (1 / 63)) ** (252 - l))
+                    short_x = short_x * ((0.5 ** (1 / 63)) ** (252 - l))  ##指数加权
                     short_y = short_y * ((0.5 ** (1 / 63)) ** (252 - l))
                     x = np.asmatrix(short_x).transpose()
                     y = np.asmatrix(short_y).transpose()

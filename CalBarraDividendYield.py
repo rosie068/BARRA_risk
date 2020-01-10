@@ -15,8 +15,8 @@ outFilename = 'BarraDividendYield.h5'
 
 def CalBarraDividendYield(dates):
     DividendYield = ['DividendYield','DPIBS']
-    statemap = {'DividendYield':['cash_dividend'], ##暂无数据
-                'DPIBS':['未来12个月预测每股股息','stock_price']} ##暂无数据
+    statemap = {'DividendYield':['cash_dividend'], ##现金分红
+                'DPIBS':['未来12个月预测每股股息']} ##暂无数据
 
     if DB_CONN == 1:
         #函数以数据库连接
@@ -90,6 +90,7 @@ def CalBarraDividendYield(dates):
         elif factor == 'DPIBS':
             factorvalue = nf['未来12个月预测每股股息'] / mkt['close_price']
 
+        ##数据输出
         st = pd.HDFStore(outFilename)
         if factor in [x[1:] for x in st.keys()]:
             existday = st.select_column(factor, 'index')

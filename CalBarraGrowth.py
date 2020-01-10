@@ -10,6 +10,7 @@ from sklearn import datasets, linear_model
 import sqlalchemy
 import urllib
 
+##find the coefficient of linear regression
 def linear_regression_coef(X,y):
     reg = linear_model.LinearRegression()
     reg.fit(X,y)
@@ -45,9 +46,6 @@ def CalBarraGrowth(dates):
             mkt = st.select('mkt', "columns=['total_share']")
         st.close()
 
-        #state = state.iloc[0:300,:]
-        #mkt = mkt.iloc[0:300,:]
-
         #因子计算,财务数据对齐
         ##财务数据对齐
         state = state.unstack()
@@ -78,17 +76,18 @@ def CalBarraGrowth(dates):
             factorvalue = nf[statemap[factor][0]] / (math.abs(nf[statemap[factor][1]]) - 1)
 
         elif factor in ['EGRO','SGRO']:
+            ##temp5是要回归的数据
             if factor == 'EGRO':
                 temp5 = nf['net_profit0'] / mkt['total_share']
             else:
-                temp5 = nf['operate_profit'] + nf['operate_expense']
+                temp5 = (nf['operate_profit'] + nf['operate_expense']) / mkt['total_share']
 
             factorvalue = abs(temp5.copy(deep=True) * 0)
             for i in range(len(temp5.iloc[0, :])):
                 stock_val = temp5.iloc[:, i]
                 stock_val = stock_val.dropna(how='all')
                 stock_fval = abs(stock_val.copy(deep=True) * 0)
-                for j in range(len(stock_val)-1, 19, -1):
+                for j in range(len(stock_val)-1, 19, -1):    ##回归过去5年,就是20个季度
                     temp_y = stock_val.iloc[j-20:j].fillna(0)
                     temp_x = np.arange(20)
                     x = np.asmatrix(temp_x).transpose()

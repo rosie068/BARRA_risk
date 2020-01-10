@@ -16,6 +16,7 @@ def linear_regression_int(X,y):
     reg.fit(X,y)
     return reg.intercept_
 
+##calculate RS according to BARRA Handbook
 def cal_RS(t, sec_return, rf_return, length, halflife):
     RS = 0
     sec_return[sec_return <= -1] = 0
@@ -56,7 +57,7 @@ def CalBarraMomentum(dates):
         st.close()
 
         if factor in ['STREV', 'INDMOM', 'RSTR', 'HALPHA']:
-            ##set the risk_free return to be 0.1 for everyday, change later
+            ##set the risk_free return to be 0.1 for everyday, can change if data available
             state['rf_return'] = pd.Series()
             state['rf_return'] = state['rf_return'].fillna(0.1)
 
@@ -101,7 +102,7 @@ def CalBarraMomentum(dates):
                 factorvalue.iloc[:,i] = each_stock
 
         elif factor == 'INDMOM':
-            # 分红数据，处理市值用.
+            # 分红数据
             if DB_CONN == 1:
                 dividend = pd.read_sql("""select sec_code,cast(ex_date as varchar) as date,cast(reg_date as varchar) as reg_date,bonus_ratio 
                                                                   from tbas..tCOM_dividend where div_type = 1""",
@@ -138,7 +139,6 @@ def CalBarraMomentum(dates):
             new_state[['sector_code', 'group_code']] = new_state[['sector_code', 'group_code']].fillna(method='ffill')
             new_state = new_state.dropna()
 
-            # 4. 因子计算
             # 财务数据对齐
             tempa = tempa.unstack()
             tempa = tempa[(tempa.index.month.isin([3, 6, 9, 12]))].stack()
@@ -171,6 +171,7 @@ def CalBarraMomentum(dates):
 
             industry = new_state.group_code.drop_duplicates()
 
+            ##计算RS
             temp_array = []
             for i in range(len(stocks)):
                 each_stock = new_state[new_state.secID==stocks[i]]
@@ -233,7 +234,6 @@ def CalBarraMomentum(dates):
             dividend = dividend.reset_index()
             dividend = dividend.set_index(['date', 'sec_code'])
 
-            # 4. 因子计算
             # 财务数据对齐
             tempa = tempa.unstack()
             tempa = tempa[(tempa.index.month.isin([3, 6, 9, 12]))].stack()
@@ -276,6 +276,7 @@ def CalBarraMomentum(dates):
             state = state[state.dates.isin(total_weight.date.values)]
             new_state = pd.merge(state, total_weight, left_on='dates', right_on='date', how='outer').fillna(0)
 
+            ##回归得alpha
             for s in range(len(stocks)):
                 each_stock = new_state[new_state.secID == stocks[s]]
                 each_stock = each_stock.set_index(['dates', 'secID'])
@@ -294,8 +295,6 @@ def CalBarraMomentum(dates):
                     each_fact.iloc[l] = a
                 factor_arr.append(each_fact)
             factorvalue = pd.concat(factor_arr)
-
-        #print(factorvalue)
 
         st = pd.HDFStore(outFilename)
         if factor in [x[1:] for x in st.keys()]:

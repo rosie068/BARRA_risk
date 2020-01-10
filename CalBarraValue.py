@@ -66,7 +66,7 @@ def CalBarraValue(dates):
             state = st.select('sheet',"columns="+str(fcl))
         st.close()
 
-        ##set risk_free to 0.1 for now for ALL THE DATES, change later
+        ##set risk_free to 0.1 for now for ALL THE DATES, change if data available
         if factor in ['LTRSTR','LTHALPHA']:
             state['rf_return'] = pd.Series(len(state['sec_return']))
             state['rf_return'] = state['rf_return'].fillna(0.1)
@@ -216,10 +216,10 @@ def CalBarraValue(dates):
                 each_stock = each_stock.set_index(['dates', 'secID'])
                 each_fact = abs(each_stock.iloc[:, 0] * 0)
                 factor_arr = []
-                for l in range(len(each_stock) - 1, 251, -1):
-                    short_y = each_stock['sec_return'].iloc[l - 252:l] - each_stock['rf_return'].iloc[l - 252:l].values
-                    short_x = each_stock['Rt'].iloc[l - 252:l].values
-                    short_x = short_x * ((0.5 ** (1 / 63)) ** (252 - l))
+                for l in range(len(each_stock) - 1, 1280, -1):
+                    short_y = each_stock['sec_return'].iloc[l - 273 - 1008:l] - each_stock['rf_return'].iloc[l - 273 - 1008:l].values  ##向前推13个月, 再用48个月
+                    short_x = each_stock['Rt'].iloc[l - 273 - 1008:l].values
+                    short_x = short_x * ((0.5 ** (1 / 63)) ** (252 - l))  ##将数据进行指数加权
                     short_y = short_y * ((0.5 ** (1 / 63)) ** (252 - l))
                     x = np.asmatrix(short_x).transpose()
                     y = np.asmatrix(short_y).transpose()

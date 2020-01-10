@@ -129,10 +129,10 @@ def CalBarraQuality(dates):
             factorvalue = (nf['depreciation_amortization'].rolling(252).sum() / 63) / mkt['close_price']
         elif factor == 'ACBS':
             factorvalue = (nf['delta'+'total_cur_asset'] - nf['delta'+'cash'] - nf['delta'+'total_cur_liab'] +
-                nf['delta'+'short_borrow']) / nf['total_asset']
+                nf['delta'+'short_borrow']) / nf['total_asset']    ##暂时缺失数据,有数据后可用下一行
             ##factorvalue = (nf['delta'+'total_cur_asset'] - nf['delta'+'cash'] - nf['delta'+'total_cur_liab'] + nf['delta'+'short_borrow'] - nf['depreciation_amortization']) / nf['total_asset']
         elif factor == 'ACCF':
-            factorvalue = (nf['delta' + 'inventory'] - nf['delta' + 'total_cur_liab']) / nf['total_asset']
+            factorvalue = (nf['delta' + 'inventory'] - nf['delta' + 'total_cur_liab']) / nf['total_asset'] ##暂时缺失数据,有数据后可用下一行
             ##factorvalue = (nf['delta'+'account_rec'] + nf['delta'+'inventory'] - nf['delta'+'account_pay'] - nf['delta'+'tax_pay'] - nf['delta'+'other_current_liab_asset'] - nf['depreciation_amortization']) / nf['total_asset']
         elif factor == 'ATO':
             factorvalue = ((nf['operate_profit'] + nf['operate_expense']).rolling(252).sum() / 63) / nf['total_asset']
@@ -147,6 +147,7 @@ def CalBarraQuality(dates):
             temp = nf[statemap[factor][0]]
             factorvalue = abs(temp.copy(deep=True) * 0)
 
+            ##回归
             for i in range(len(temp.iloc[0, :])):
                 stock_val = temp.iloc[:, i]
                 stock_val = stock_val.dropna(how='all')

@@ -14,8 +14,7 @@ inFilename = 'A.h5'
 outFilename = 'BarraLiquidity.h5'
 
 def CalBarraLiquidity(dates):
-    #Liquidity = ['STOM','STOQ','STOA','ATR']
-    Liquidity = ['ATR']
+    Liquidity = ['STOM','STOQ','STOA','ATR']
     statemap = {'STOM':['trade_volumn','total_share'],'STOQ':['trade_volumn','total_share'],'STOA':['trade_volumn','total_share'],
         'ATR':['trade_volumn','total_share','close_price']}
 
@@ -73,10 +72,10 @@ def CalBarraLiquidity(dates):
 
             div_only = dividend['dividend']
             mkt = mkt.merge(div_only, how='left', left_index=True, right_index=True).fillna(0)
-            mkt['final'] = mkt['close_price'] * mkt['total_share'] + mkt['dividend']
+            mkt['final'] = mkt['close_price'] * mkt['total_share'] + mkt['dividend']   ##最终的市值
             mkt = mkt.drop(columns=['close_price','total_share','dividend'])
 
-            ##find the month_end to be divided
+            ##找到每个月的月底
             mkt['isMonthEnd'] = False
             dates = mkt.index.values
             mkt['date'] = [x[0] for x in dates]
@@ -96,6 +95,7 @@ def CalBarraLiquidity(dates):
                     if mkt.iloc[j,2] == month_end_dates[i]:
                         mkt.iloc[j,3] = total_sum
 
+            ##把每一天的权重设成改月月底占市值权重
             mkt['weights'] = (mkt['final'] / mkt['total_mkt']).fillna(method='bfill')
             daily_value = state['trade_volumn'] / state['total_share']
             factorvalue = (daily_value * mkt['weights']).rolling(21*12).sum() / 12
