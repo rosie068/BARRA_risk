@@ -1,6 +1,6 @@
 """
 Created on Wed Nov 13 2019
-@author: heyuan
+@author: RosemaryHe
 """
 
 import pandas as pd
@@ -37,10 +37,10 @@ def CalBarraMomentum(dates):
     if DB_CONN == 1:
         #函数以数据库连接
         conn_params = urllib.parse.quote_plus("""DRIVER={SQL Server Native Client 10.0};
-                                        SERVER=quant;DATABASE=tbas;UID=quant;PWD=quant007""")
+                                        SERVER=quant;DATABASE=tbas;UID=*****;PWD=********""")
         conn = sqlalchemy.create_engine("mssql+pyodbc:///?odbc_connect=%s" % conn_params)
         conn_params=urllib.parse.quote_plus("""DRIVER={SQL Server Native Client 10.0};
-                                        SERVER=10.130.14.41;DATABASE=fcdb;UID=ch_data;PWD=68880980""")
+                                        SERVER=10.130.14.41;DATABASE=fcdb;UID=*****;PWD=********""")
         conn2 = sqlalchemy.create_engine("mssql+pyodbc:///?odbc_connect=%s" % conn_params)
 
     for factor in Momentum:
